@@ -1,0 +1,3226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudVault - Cloud File Storage</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Inter, Arial, sans-serif;
+}
+
+:root {
+    --primary: #635bff;
+    --primary-dark: #5148e8;
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #171923;
+    --muted: #737887;
+    --border: #e5e7ef;
+    --danger: #ef4444;
+    --success: #16a34a;
+    --warning: #f59e0b;
+}
+
+body.dark {
+    --bg: #101114;
+    --card: #181a20;
+    --text: #f5f5f5;
+    --muted: #9ca3af;
+    --border: #2b2e36;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* LOGIN */
+
+#loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background:
+        radial-gradient(circle at top left, rgba(99,91,255,.25), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(59,130,246,.18), transparent 35%),
+        var(--bg);
+}
+
+.login-box {
+    width: 100%;
+    max-width: 430px;
+    background: var(--card);
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 25px 80px rgba(0,0,0,.12);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 23px;
+    font-weight: 800;
+    margin-bottom: 30px;
+}
+
+.logo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: white;
+    font-size: 22px;
+}
+
+.login-box h1 {
+    font-size: 29px;
+    margin-bottom: 8px;
+}
+
+.login-box p {
+    color: var(--muted);
+    margin-bottom: 28px;
+}
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 11px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: var(--primary);
+}
+
+.btn {
+    border: none;
+    padding: 11px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-light {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.login-error {
+    background: rgba(239,68,68,.1);
+    color: var(--danger);
+    padding: 10px;
+    border-radius: 9px;
+    margin-bottom: 15px;
+    display: none;
+}
+
+.demo-login {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* APP */
+
+#app {
+    display: none;
+    min-height: 100vh;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 260px;
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    padding: 22px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 50;
+}
+
+.sidebar .logo {
+    margin-bottom: 35px;
+}
+
+.nav-title {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 20px 10px 10px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: rgba(99,91,255,.1);
+    color: var(--primary);
+}
+
+.nav-icon {
+    width: 20px;
+    text-align: center;
+}
+
+.storage-box {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 15px;
+    border-radius: 14px;
+}
+
+.storage-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+.progress {
+    width: 100%;
+    height: 7px;
+    background: var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress div {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    transition: .3s;
+}
+
+.storage-info {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+}
+
+/* MAIN */
+
+.main {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+}
+
+.topbar {
+    height: 75px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+}
+
+.search {
+    width: 350px;
+    position: relative;
+}
+
+.search input {
+    padding-left: 40px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 13px;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 8px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+/* CONTENT */
+
+.content {
+    padding: 30px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+}
+
+.page-header p {
+    color: var(--muted);
+    margin-top: 4px;
+    font-size: 14px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* STAT CARDS */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.stat-top {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.stat-value {
+    font-size: 27px;
+    font-weight: 800;
+    margin-top: 12px;
+}
+
+.stat-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(99,91,255,.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+}
+
+/* UPLOAD */
+
+.upload-area {
+    border: 2px dashed var(--border);
+    background: var(--card);
+    padding: 35px;
+    text-align: center;
+    border-radius: 18px;
+    margin-bottom: 25px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.upload-area.dragover {
+    border-color: var(--primary);
+    background: rgba(99,91,255,.05);
+}
+
+.upload-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: rgba(99,91,255,.1);
+    color: var(--primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    margin: 0 auto 12px;
+}
+
+.upload-area h3 {
+    margin-bottom: 6px;
+}
+
+.upload-area p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* FILE AREA */
+
+.file-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    overflow: hidden;
+}
+
+.file-toolbar {
+    padding: 17px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.breadcrumb {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.breadcrumb span {
+    cursor: pointer;
+}
+
+.breadcrumb span:hover {
+    color: var(--primary);
+}
+
+.toolbar-right {
+    display: flex;
+    gap: 9px;
+}
+
+.file-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.file-table th,
+.file-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+.file-table th {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.file-table td {
+    font-size: 13px;
+}
+
+.file-table tr:hover {
+    background: rgba(99,91,255,.025);
+}
+
+.file-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+}
+
+.file-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.folder-icon {
+    color: #f59e0b;
+}
+
+.file-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.small-btn {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 7px;
+    border-radius: 7px;
+    color: var(--muted);
+}
+
+.small-btn:hover {
+    background: var(--bg);
+    color: var(--primary);
+}
+
+.empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.empty-icon {
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+/* MOBILE */
+
+.mobile-menu {
+    display: none;
+}
+
+/* MODAL */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+}
+
+.modal {
+    width: 100%;
+    max-width: 430px;
+    background: var(--card);
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+
+.modal h2 {
+    margin-bottom: 18px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* TOAST */
+
+.toast-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 200;
+}
+
+.toast {
+    min-width: 260px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px 17px;
+    border-radius: 11px;
+    margin-top: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    animation: toastIn .25s;
+}
+
+@keyframes toastIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* SETTINGS */
+
+.settings-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.settings-card h3 {
+    margin-bottom: 7px;
+}
+
+.settings-card p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.profile-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+/* SHARE */
+
+.share-url {
+    display: flex;
+    gap: 8px;
+}
+
+.share-url input {
+    flex: 1;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 1000px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        transition: .25s;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .mobile-menu {
+        display: block;
+    }
+
+    .search {
+        width: 280px;
+    }
+}
+
+@media(max-width: 700px) {
+    .topbar {
+        padding: 0 15px;
+    }
+
+    .search {
+        display: none;
+    }
+
+    .content {
+        padding: 18px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+
+    .header-buttons {
+        width: 100%;
+    }
+
+    .header-buttons button {
+        flex: 1;
+    }
+
+    .file-table th:nth-child(3),
+    .file-table td:nth-child(3),
+    .file-table th:nth-child(4),
+    .file-table td:nth-child(4) {
+        display: none;
+    }
+
+    .upload-area {
+        padding: 25px 15px;
+    }
+
+    .login-box {
+        padding: 28px 22px;
+    }
+}
+
+@media(max-width: 450px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .user span {
+        display: none;
+    }
+
+    .file-table th:nth-child(5),
+    .file-table td:nth-child(5) {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<section id="loginScreen">
+
+    <div class="login-box">
+
+        <div class="logo">
+            <div class="logo-icon">☁</div>
+            CloudVault
+        </div>
+
+        <h1>Welcome back</h1>
+        <p>Sign in to access your cloud storage.</p>
+
+        <div id="loginError" class="login-error">
+            Invalid username or password.
+        </div>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+                <label>Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                >
+            </div>
+
+            <button class="btn btn-primary" style="width:100%">
+                Sign In
+            </button>
+
+        </form>
+
+        <div class="demo-login">
+            <strong>Demo Login</strong><br>
+            Username: <b>admin</b><br>
+            Password: <b>admin123</b>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- APPLICATION -->
+
+<div id="app">
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">☁</div>
+        CloudVault
+    </div>
+
+    <div class="nav-title">MAIN</div>
+
+    <div class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">▦</span>
+        Dashboard
+    </div>
+
+    <div class="nav-item" data-page="files">
+        <span class="nav-icon">📁</span>
+        My Files
+    </div>
+
+    <div class="nav-item" data-page="shared">
+        <span class="nav-icon">🔗</span>
+        Shared Files
+    </div>
+
+    <div class="nav-item" data-page="trash">
+        <span class="nav-icon">🗑</span>
+        Trash
+    </div>
+
+    <div class="nav-title">ACCOUNT</div>
+
+    <div class="nav-item" data-page="settings">
+        <span class="nav-icon">⚙</span>
+        Settings
+    </div>
+
+    <div class="nav-item" id="logoutBtn">
+        <span class="nav-icon">↪</span>
+        Logout
+    </div>
+
+    <div class="storage-box">
+
+        <div class="storage-title">
+            Storage
+        </div>
+
+        <div class="progress">
+            <div id="storageProgress"></div>
+        </div>
+
+        <div class="storage-info" id="storageText">
+            0 MB of 5 GB used
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+<header class="topbar">
+
+    <button
+        class="icon-btn mobile-menu"
+        id="menuBtn">
+        ☰
+    </button>
+
+    <div class="search">
+        <span class="search-icon">🔍</span>
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search files..."
+        >
+    </div>
+
+    <div class="top-actions">
+
+        <button
+            class="icon-btn"
+            id="themeBtn"
+            title="Toggle theme">
+            ☾
+        </button>
+
+        <div class="user">
+
+            <div class="avatar" id="avatar">
+                A
+            </div>
+
+            <span id="topUsername">
+                Admin
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<div class="content" id="content">
+
+</div>
+
+</main>
+
+</div>
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal-overlay" id="modalOverlay">
+
+    <div class="modal" id="modal">
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div class="toast-container" id="toastContainer"></div>
+
+
+<input
+    type="file"
+    id="fileInput"
+    multiple
+    hidden
+>
+
+
+<script>
+
+/* =========================
+   APPLICATION DATA
+========================= */
+
+const STORAGE_LIMIT = 5 * 1024 * 1024 * 1024;
+
+let currentPage = "dashboard";
+let currentFolder = null;
+let currentSort = "date-desc";
+let currentFilter = "all";
+
+let files = JSON.parse(
+    localStorage.getItem("cloudvault_files") || "[]"
+);
+
+let folders = JSON.parse(
+    localStorage.getItem("cloudvault_folders") || "[]"
+);
+
+let shares = JSON.parse(
+    localStorage.getItem("cloudvault_shares") || "[]"
+);
+
+let theme = localStorage.getItem("cloudvault_theme") || "light";
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function saveData() {
+
+    localStorage.setItem(
+        "cloudvault_files",
+        JSON.stringify(files)
+    );
+
+    localStorage.setItem(
+        "cloudvault_folders",
+        JSON.stringify(folders)
+    );
+
+    localStorage.setItem(
+        "cloudvault_shares",
+        JSON.stringify(shares)
+    );
+
+    updateStorage();
+}
+
+
+function formatBytes(bytes) {
+
+    if (!bytes) return "0 B";
+
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+    ];
+
+    const i = Math.floor(
+        Math.log(bytes) / Math.log(1024)
+    );
+
+    return (
+        (bytes / Math.pow(1024, i)).toFixed(i ? 1 : 0)
+        + " "
+        + units[i]
+    );
+}
+
+
+function formatDate(date) {
+
+    return new Date(date).toLocaleDateString(
+        undefined,
+        {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+        }
+    );
+}
+
+
+function getExtension(name) {
+
+    const parts = name.split(".");
+
+    return parts.length > 1
+        ? parts.pop().toLowerCase()
+        : "";
+}
+
+
+function fileIcon(file) {
+
+    if (file.type === "folder") {
+        return "📁";
+    }
+
+    const ext = getExtension(file.name);
+
+    if (
+        ["jpg","jpeg","png","gif","webp","svg"]
+        .includes(ext)
+    ) return "🖼️";
+
+    if (
+        ["mp4","mov","avi","mkv","webm"]
+        .includes(ext)
+    ) return "🎬";
+
+    if (
+        ["mp3","wav","ogg"]
+        .includes(ext)
+    ) return "🎵";
+
+    if (
+        ["pdf"]
+        .includes(ext)
+    ) return "📕";
+
+    if (
+        ["zip","rar","7z"]
+        .includes(ext)
+    ) return "🗜️";
+
+    if (
+        ["doc","docx","txt"]
+        .includes(ext)
+    ) return "📄";
+
+    if (
+        ["xls","xlsx","csv"]
+        .includes(ext)
+    ) return "📊";
+
+    return "📎";
+}
+
+
+function toast(message, type="normal") {
+
+    const container =
+        document.getElementById("toastContainer");
+
+    const div =
+        document.createElement("div");
+
+    div.className = "toast";
+
+    div.innerHTML =
+        (type === "success" ? "✅ " :
+         type === "error" ? "❌ " : "ℹ️ ")
+        + message;
+
+    container.appendChild(div);
+
+    setTimeout(() => {
+        div.remove();
+    }, 3000);
+}
+
+
+/* =========================
+   AUTHENTICATION
+========================= */
+
+document
+.getElementById("loginForm")
+.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    if (
+        username === "admin" &&
+        password === "admin123"
+    ) {
+
+        sessionStorage.setItem(
+            "cloudvault_logged",
+            "true"
+        );
+
+        startApp();
+
+    } else {
+
+        document
+        .getElementById("loginError")
+        .style.display = "block";
+
+    }
+
+});
+
+
+document
+.getElementById("logoutBtn")
+.addEventListener("click", logout);
+
+
+function logout() {
+
+    sessionStorage.removeItem(
+        "cloudvault_logged"
+    );
+
+    document
+    .getElementById("app")
+    .style.display = "none";
+
+    document
+    .getElementById("loginScreen")
+    .style.display = "flex";
+
+}
+
+
+/* =========================
+   APP START
+========================= */
+
+function startApp() {
+
+    document
+    .getElementById("loginScreen")
+    .style.display = "none";
+
+    document
+    .getElementById("app")
+    .style.display = "block";
+
+    document
+    .getElementById("topUsername")
+    .textContent = "Admin";
+
+    document
+    .getElementById("avatar")
+    .textContent = "A";
+
+    applyTheme();
+
+    renderPage();
+
+    updateStorage();
+
+}
+
+
+if (
+    sessionStorage.getItem("cloudvault_logged")
+    === "true"
+) {
+
+    startApp();
+
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+document
+.querySelectorAll(".nav-item[data-page]")
+.forEach(item => {
+
+    item.addEventListener("click", () => {
+
+        currentPage =
+            item.dataset.page;
+
+        currentFolder = null;
+
+        document
+        .querySelectorAll(".nav-item")
+        .forEach(n =>
+            n.classList.remove("active")
+        );
+
+        item.classList.add("active");
+
+        document
+        .getElementById("sidebar")
+        .classList.remove("open");
+
+        renderPage();
+
+    });
+
+});
+
+
+function renderPage() {
+
+    const content =
+        document.getElementById("content");
+
+    if (currentPage === "dashboard") {
+
+        content.innerHTML =
+            dashboardHTML();
+
+        bindDashboard();
+
+    }
+
+    else if (currentPage === "files") {
+
+        content.innerHTML =
+            filesPageHTML();
+
+        bindFilePage();
+
+    }
+
+    else if (currentPage === "shared") {
+
+        content.innerHTML =
+            sharedPageHTML();
+
+    }
+
+    else if (currentPage === "trash") {
+
+        content.innerHTML =
+            trashPageHTML();
+
+    }
+
+    else if (currentPage === "settings") {
+
+        content.innerHTML =
+            settingsPageHTML();
+
+    }
+
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function dashboardHTML() {
+
+    const activeFiles =
+        files.filter(f => !f.deleted);
+
+    const used =
+        activeFiles.reduce(
+            (sum,f) => sum + (f.size || 0),
+            0
+        );
+
+    const images =
+        activeFiles.filter(f =>
+            ["jpg","jpeg","png","gif","webp","svg"]
+            .includes(getExtension(f.name))
+        ).length;
+
+    const videos =
+        activeFiles.filter(f =>
+            ["mp4","mov","avi","mkv","webm"]
+            .includes(getExtension(f.name))
+        ).length;
+
+    const docs =
+        activeFiles.filter(f =>
+            ["pdf","doc","docx","txt","xls","xlsx","csv"]
+            .includes(getExtension(f.name))
+        ).length;
+
+    const recent =
+        [...activeFiles]
+        .sort(
+            (a,b) =>
+            new Date(b.date) - new Date(a.date)
+        )
+        .slice(0,6);
+
+    return `
+
+    <div class="page-header">
+
+        <div>
+            <h1>Dashboard</h1>
+            <p>Manage your cloud files from one place.</p>
+        </div>
+
+        <div class="header-buttons">
+
+            <button
+                class="btn btn-light"
+                onclick="createFolder()">
+                + New Folder
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="openUpload()">
+                ↑ Upload Files
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+                <span>Storage Used</span>
+                <div class="stat-icon">☁</div>
+            </div>
+
+            <div class="stat-value">
+                ${formatBytes(used)}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+                <span>Total Files</span>
+                <div class="stat-icon">📁</div>
+            </div>
+
+            <div class="stat-value">
+                ${activeFiles.length}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+                <span>Images</span>
+                <div class="stat-icon">🖼</div>
+            </div>
+
+            <div class="stat-value">
+                ${images}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+                <span>Documents</span>
+                <div class="stat-icon">📄</div>
+            </div>
+
+            <div class="stat-value">
+                ${docs}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="upload-area" id="uploadArea">
+
+        <div class="upload-icon">
+            ↑
+        </div>
+
+        <h3>Drag & Drop files here</h3>
+
+        <p>
+            or click to browse files from your device
+        </p>
+
+    </div>
+
+
+    <div class="file-panel">
+
+        <div class="file-toolbar">
+
+            <strong>Recent Files</strong>
+
+            <button
+                class="btn btn-light"
+                onclick="navigateTo('files')">
+                View All
+            </button>
+
+        </div>
+
+        ${
+            recent.length
+            ? fileTableHTML(recent)
+            : emptyHTML(
+                "☁️",
+                "No files yet",
+                "Upload your first file to get started."
+            )
+        }
+
+    </div>
+
+    `;
+}
+
+
+function bindDashboard() {
+
+    const area =
+        document.getElementById("uploadArea");
+
+    if (!area) return;
+
+    area.onclick = openUpload;
+
+    area.addEventListener(
+        "dragover",
+        e => {
+
+            e.preventDefault();
+
+            area.classList.add("dragover");
+
+        }
+    );
+
+    area.addEventListener(
+        "dragleave",
+        () => {
+            area.classList.remove("dragover");
+        }
+    );
+
+    area.addEventListener(
+        "drop",
+        e => {
+
+            e.preventDefault();
+
+            area.classList.remove("dragover");
+
+            handleFiles(
+                Array.from(e.dataTransfer.files)
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   FILE PAGE
+========================= */
+
+function filesPageHTML() {
+
+    let visibleFiles =
+        files.filter(f =>
+            !f.deleted &&
+            f.parent === currentFolder
+        );
+
+    const search =
+        document
+        .getElementById("searchInput")
+        ?.value
+        .toLowerCase() || "";
+
+    if (search) {
+
+        visibleFiles =
+            visibleFiles.filter(f =>
+                f.name.toLowerCase().includes(search)
+            );
+
+    }
+
+    if (currentFilter !== "all") {
+
+        visibleFiles =
+            visibleFiles.filter(f => {
+
+                const ext =
+                    getExtension(f.name);
+
+                if (currentFilter === "image")
+                    return [
+                        "jpg","jpeg","png","gif","webp","svg"
+                    ].includes(ext);
+
+                if (currentFilter === "video")
+                    return [
+                        "mp4","mov","avi","mkv","webm"
+                    ].includes(ext);
+
+                if (currentFilter === "document")
+                    return [
+                        "pdf","doc","docx","txt",
+                        "xls","xlsx","csv"
+                    ].includes(ext);
+
+                if (currentFilter === "archive")
+                    return [
+                        "zip","rar","7z"
+                    ].includes(ext);
+
+                return true;
+
+            });
+
+    }
+
+
+    visibleFiles.sort((a,b) => {
+
+        if (currentSort === "name")
+            return a.name.localeCompare(b.name);
+
+        if (currentSort === "size")
+            return (b.size || 0) - (a.size || 0);
+
+        return new Date(b.date) - new Date(a.date);
+
+    });
+
+
+    const folderName =
+        currentFolder
+        ? (
+            folders.find(
+                f => f.id === currentFolder
+            )?.name || "Folder"
+        )
+        : "My Files";
+
+
+    return `
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>${folderName}</h1>
+
+            <p>
+                Your personal cloud storage.
+            </p>
+
+        </div>
+
+        <div class="header-buttons">
+
+            <button
+                class="btn btn-light"
+                onclick="createFolder()">
+                + New Folder
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="openUpload()">
+                ↑ Upload
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="file-panel">
+
+        <div class="file-toolbar">
+
+            <div class="breadcrumb">
+
+                <span onclick="goRoot()">
+                    ☁ My Files
+                </span>
+
+                ${
+                    currentFolder
+                    ? " / " + folderName
+                    : ""
+                }
+
+            </div>
+
+
+            <div class="toolbar-right">
+
+                <select
+                    id="filterSelect"
+                    onchange="
+                        currentFilter=this.value;
+                        renderPage();
+                    ">
+
+                    <option value="all">All Files</option>
+                    <option value="image">Images</option>
+                    <option value="video">Videos</option>
+                    <option value="document">Documents</option>
+                    <option value="archive">Archives</option>
+
+                </select>
+
+
+                <select
+                    onchange="
+                        currentSort=this.value;
+                        renderPage();
+                    ">
+
+                    <option value="date-desc">
+                        Latest
+                    </option>
+
+                    <option value="name">
+                        Name
+                    </option>
+
+                    <option value="size">
+                        Size
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        ${
+            visibleFiles.length
+            ? fileTableHTML(visibleFiles)
+            : emptyHTML(
+                "📁",
+                "This folder is empty",
+                "Upload files or create a new folder."
+            )
+        }
+
+    </div>
+
+    `;
+}
+
+
+function bindFilePage() {}
+
+
+/* =========================
+   FILE TABLE
+========================= */
+
+function fileTableHTML(items) {
+
+    return `
+
+    <table class="file-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Name</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Modified</th>
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        ${
+            items.map(file => {
+
+                const isFolder =
+                    file.type === "folder";
+
+                return `
+
+                <tr>
+
+                    <td>
+
+                        <div
+                            class="file-name"
+                            ${
+                                isFolder
+                                ? `onclick="openFolder('${file.id}')"`
+                                : ""
+                            }>
+
+                            <div class="file-icon">
+                                ${fileIcon(file)}
+                            </div>
+
+                            <span>
+                                ${escapeHTML(file.name)}
+                            </span>
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        ${
+                            isFolder
+                            ? "Folder"
+                            : getExtension(file.name)
+                              .toUpperCase() || "File"
+                        }
+                    </td>
+
+
+                    <td>
+                        ${
+                            isFolder
+                            ? "-"
+                            : formatBytes(file.size)
+                        }
+                    </td>
+
+
+                    <td>
+                        ${formatDate(file.date)}
+                    </td>
+
+
+                    <td>
+
+                        <div class="file-actions">
+
+                            ${
+                                !isFolder
+                                ? `
+                                <button
+                                    class="small-btn"
+                                    title="Download"
+                                    onclick="downloadFile('${file.id}')">
+                                    ↓
+                                </button>
+
+                                <button
+                                    class="small-btn"
+                                    title="Share"
+                                    onclick="shareFile('${file.id}')">
+                                    🔗
+                                </button>
+                                `
+                                : ""
+                            }
+
+
+                            <button
+                                class="small-btn"
+                                title="Rename"
+                                onclick="renameItem('${file.id}')">
+                                ✎
+                            </button>
+
+
+                            <button
+                                class="small-btn"
+                                title="Delete"
+                                onclick="moveToTrash('${file.id}')">
+                                🗑
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                `;
+
+            }).join("")
+        }
+
+        </tbody>
+
+    </table>
+
+    `;
+
+}
+
+
+function emptyHTML(icon,title,text) {
+
+    return `
+
+    <div class="empty">
+
+        <div class="empty-icon">
+            ${icon}
+        </div>
+
+        <h3>${title}</h3>
+
+        <p>${text}</p>
+
+    </div>
+
+    `;
+
+}
+
+
+/* =========================
+   UPLOAD
+========================= */
+
+function openUpload() {
+
+    document
+    .getElementById("fileInput")
+    .click();
+
+}
+
+
+document
+.getElementById("fileInput")
+.addEventListener(
+    "change",
+    e => {
+
+        handleFiles(
+            Array.from(e.target.files)
+        );
+
+        e.target.value = "";
+
+    }
+);
+
+
+function handleFiles(selectedFiles) {
+
+    if (!selectedFiles.length)
+        return;
+
+    let total =
+        files
+        .filter(f => !f.deleted)
+        .reduce(
+            (sum,f) => sum + (f.size || 0),
+            0
+        );
+
+    selectedFiles.forEach(file => {
+
+        if (
+            total + file.size >
+            STORAGE_LIMIT
+        ) {
+
+            toast(
+                "Storage limit exceeded.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        const reader =
+            new FileReader();
+
+        reader.onload = function(e) {
+
+            files.push({
+
+                id:
+                    Date.now()
+                    + Math.random()
+                    .toString(36)
+                    .substring(2),
+
+                name: file.name,
+
+                type: file.type || "application/octet-stream",
+
+                size: file.size,
+
+                date: new Date().toISOString(),
+
+                parent: currentFolder,
+
+                deleted: false,
+
+                data: e.target.result
+
+            });
+
+            saveData();
+
+            renderPage();
+
+            toast(
+                file.name + " uploaded successfully.",
+                "success"
+            );
+
+        };
+
+        reader.readAsDataURL(file);
+
+        total += file.size;
+
+    });
+
+}
+
+
+/* =========================
+   FOLDERS
+========================= */
+
+function createFolder() {
+
+    openModal(`
+
+        <h2>Create Folder</h2>
+
+        <div class="form-group">
+
+            <label>Folder Name</label>
+
+            <input
+                id="folderName"
+                placeholder="My Documents"
+                autofocus
+            >
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="btn btn-light"
+                onclick="closeModal()">
+                Cancel
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="saveFolder()">
+                Create
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+function saveFolder() {
+
+    const name =
+        document
+        .getElementById("folderName")
+        .value
+        .trim();
+
+    if (!name) {
+
+        toast(
+            "Enter a folder name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    folders.push({
+
+        id:
+            Date.now()
+            + Math.random()
+            .toString(36),
+
+        name,
+
+        parent: currentFolder,
+
+        date: new Date().toISOString()
+
+    });
+
+    closeModal();
+
+    saveData();
+
+    renderPage();
+
+    toast(
+        "Folder created.",
+        "success"
+    );
+
+}
+
+
+function openFolder(id) {
+
+    currentFolder = id;
+
+    currentPage = "files";
+
+    activateNav("files");
+
+    renderPage();
+
+}
+
+
+function goRoot() {
+
+    currentFolder = null;
+
+    renderPage();
+
+}
+
+
+/* =========================
+   RENAME
+========================= */
+
+function renameItem(id) {
+
+    const file =
+        files.find(f => f.id === id);
+
+    const folder =
+        folders.find(f => f.id === id);
+
+    const item = file || folder;
+
+    if (!item) return;
+
+    openModal(`
+
+        <h2>Rename</h2>
+
+        <div class="form-group">
+
+            <label>New Name</label>
+
+            <input
+                id="renameInput"
+                value="${escapeHTML(item.name)}"
+            >
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="btn btn-light"
+                onclick="closeModal()">
+                Cancel
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="saveRename('${id}')">
+                Save
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+function saveRename(id) {
+
+    const name =
+        document
+        .getElementById("renameInput")
+        .value
+        .trim();
+
+    if (!name) return;
+
+    const file =
+        files.find(f => f.id === id);
+
+    const folder =
+        folders.find(f => f.id === id);
+
+    if (file) file.name = name;
+
+    if (folder) folder.name = name;
+
+    closeModal();
+
+    saveData();
+
+    renderPage();
+
+    toast(
+        "Renamed successfully.",
+        "success"
+    );
+
+}
+
+
+/* =========================
+   TRASH
+========================= */
+
+function moveToTrash(id) {
+
+    const file =
+        files.find(f => f.id === id);
+
+    if (file) {
+
+        if (
+            !confirm(
+                "Move this file to Trash?"
+            )
+        ) return;
+
+        file.deleted = true;
+
+    } else {
+
+        const folder =
+            folders.find(f => f.id === id);
+
+        if (!folder) return;
+
+        if (
+            !confirm(
+                "Move this folder to Trash?"
+            )
+        ) return;
+
+        folder.deleted = true;
+
+    }
+
+    saveData();
+
+    renderPage();
+
+    toast(
+        "Moved to Trash.",
+        "success"
+    );
+
+}
+
+
+function trashPageHTML() {
+
+    const deleted =
+        files.filter(f => f.deleted);
+
+    return `
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>Trash</h1>
+
+            <p>
+                Restore or permanently delete your files.
+            </p>
+
+        </div>
+
+        <button
+            class="btn btn-danger"
+            onclick="emptyTrash()">
+            Empty Trash
+        </button>
+
+    </div>
+
+
+    <div class="file-panel">
+
+        ${
+            deleted.length
+            ? `
+
+            <table class="file-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Deleted</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${
+                        deleted.map(f => `
+
+                        <tr>
+
+                            <td>
+
+                                <div class="file-name">
+
+                                    <div class="file-icon">
+                                        ${fileIcon(f)}
+                                    </div>
+
+                                    ${escapeHTML(f.name)}
+
+                                </div>
+
+                            </td>
+
+                            <td>
+                                ${formatBytes(f.size)}
+                            </td>
+
+                            <td>
+                                ${formatDate(f.date)}
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="small-btn"
+                                    onclick="restoreFile('${f.id}')">
+                                    ♻ Restore
+                                </button>
+
+                                <button
+                                    class="small-btn"
+                                    onclick="permanentDelete('${f.id}')">
+                                    ✕ Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        `).join("")
+                    }
+
+                </tbody>
+
+            </table>
+
+            `
+            : emptyHTML(
+                "🗑️",
+                "Trash is empty",
+                "Deleted files will appear here."
+            )
+        }
+
+    </div>
+
+    `;
+
+}
+
+
+function restoreFile(id) {
+
+    const file =
+        files.find(f => f.id === id);
+
+    if (!file) return;
+
+    file.deleted = false;
+
+    saveData();
+
+    renderPage();
+
+    toast(
+        "File restored.",
+        "success"
+    );
+
+}
+
+
+function permanentDelete(id) {
+
+    if (
+        !confirm(
+            "Permanently delete this file?"
+        )
+    ) return;
+
+    files =
+        files.filter(
+            f => f.id !== id
+        );
+
+    saveData();
+
+    renderPage();
+
+    toast(
+        "File permanently deleted.",
+        "success"
+    );
+
+}
+
+
+function emptyTrash() {
+
+    const deleted =
+        files.filter(f => f.deleted);
+
+    if (!deleted.length) {
+
+        toast("Trash is already empty.");
+
+        return;
+
+    }
+
+    if (
+        !confirm(
+            "Permanently delete all files in Trash?"
+        )
+    ) return;
+
+    files =
+        files.filter(
+            f => !f.deleted
+        );
+
+    saveData();
+
+    renderPage();
+
+    toast(
+        "Trash emptied.",
+        "success"
+    );
+
+}
+
+
+/* =========================
+   DOWNLOAD
+========================= */
+
+function downloadFile(id) {
+
+    const file =
+        files.find(f => f.id === id);
+
+    if (!file || !file.data) {
+
+        toast(
+            "File data is unavailable.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    const a =
+        document.createElement("a");
+
+    a.href = file.data;
+
+    a.download = file.name;
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    toast(
+        "Download started.",
+        "success"
+    );
+
+}
+
+
+/* =========================
+   SHARING
+========================= */
+
+function shareFile(id) {
+
+    const file =
+        files.find(f => f.id === id);
+
+    if (!file) return;
+
+    let existing =
+        shares.find(s => s.fileId === id);
+
+    if (!existing) {
+
+        existing = {
+
+            id:
+                Date.now()
+                .toString(36),
+
+            fileId: id,
+
+            token:
+                Math.random()
+                .toString(36)
+                .substring(2)
+                +
+                Math.random()
+                .toString(36)
+                .substring(2),
+
+            permission: "view",
+
+            expires: ""
+
+        };
+
+        shares.push(existing);
+
+        saveData();
+
+    }
+
+    const url =
+        location.href.split("#")[0]
+        + "#share="
+        + existing.token;
+
+    openModal(`
+
+        <h2>Share File</h2>
+
+        <p style="color:var(--muted);margin-bottom:15px">
+            Anyone with this link can access the shared file.
+        </p>
+
+        <div class="form-group">
+
+            <label>Permission</label>
+
+            <select
+                id="sharePermission"
+                onchange="updateSharePermission('${existing.id}')">
+
+                <option
+                    value="view"
+                    ${existing.permission==="view"?"selected":""}>
+                    View Only
+                </option>
+
+                <option
+                    value="download"
+                    ${existing.permission==="download"?"selected":""}>
+                    View & Download
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="share-url">
+
+            <input
+                value="${url}"
+                readonly
+                id="shareLink"
+            >
+
+            <button
+                class="btn btn-primary"
+                onclick="copyShareLink()">
+                Copy
+            </button>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="btn btn-light"
+                onclick="closeModal()">
+                Close
+            </button>
+
+            <button
+                class="btn btn-danger"
+                onclick="revokeShare('${existing.id}')">
+                Revoke
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+function updateSharePermission(id) {
+
+    const share =
+        shares.find(s => s.id === id);
+
+    if (!share) return;
+
+    share.permission =
+        document
+        .getElementById("sharePermission")
+        .value;
+
+    saveData();
+
+}
+
+
+function copyShareLink() {
+
+    const input =
+        document.getElementById("shareLink");
+
+    navigator.clipboard
+    .writeText(input.value)
+    .then(() => {
+
+        toast(
+            "Share link copied.",
+            "success"
+        );
+
+    });
+
+}
+
+
+function revokeShare(id) {
+
+    shares =
+        shares.filter(
+            s => s.id !== id
+        );
+
+    saveData();
+
+    closeModal();
+
+    toast(
+        "Share link revoked.",
+        "success"
+    );
+
+}
+
+
+function sharedPageHTML() {
+
+    const shared =
+        shares
+        .map(s => {
+
+            const file =
+                files.find(
+                    f => f.id === s.fileId
+                );
+
+            return file
+                ? {...s,file}
+                : null;
+
+        })
+        .filter(Boolean);
+
+    return `
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>Shared Files</h1>
+
+            <p>
+                Files that have share links.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="file-panel">
+
+        ${
+            shared.length
+            ? fileTableHTML(
+                shared.map(s => s.file)
+            )
+            : emptyHTML(
+                "🔗",
+                "No shared files",
+                "Create a share link for any file."
+            )
+        }
+
+    </div>
+
+    `;
+
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+function settingsPageHTML() {
+
+    return `
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>Settings</h1>
+
+            <p>
+                Manage your CloudVault account.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="settings-card">
+
+        <h3>Profile</h3>
+
+        <p>
+            Your account information.
+        </p>
+
+        <div class="profile-row">
+
+            <div class="profile-avatar">
+                A
+            </div>
+
+            <div>
+
+                <div class="form-group">
+
+                    <label>Username</label>
+
+                    <input
+                        value="admin"
+                        disabled
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Account Type</label>
+
+                    <input
+                        value="Personal Account"
+                        disabled
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="settings-card">
+
+        <h3>Security</h3>
+
+        <p>
+            Demo authentication settings.
+        </p>
+
+        <button
+            class="btn btn-light"
+            onclick="changePassword()">
+            Change Password
+        </button>
+
+    </div>
+
+
+    <div class="settings-card">
+
+        <h3>Appearance</h3>
+
+        <p>
+            Customize your dashboard appearance.
+        </p>
+
+        <button
+            class="btn btn-light"
+            onclick="toggleTheme()">
+            Toggle Light / Dark Mode
+        </button>
+
+    </div>
+
+
+    <div class="settings-card">
+
+        <h3>Storage</h3>
+
+        <p>
+            Browser-based demo storage limit: 5 GB.
+        </p>
+
+        <div class="progress">
+
+            <div
+                id="settingsProgress"
+                style="width:0%">
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+
+function changePassword() {
+
+    openModal(`
+
+        <h2>Change Password</h2>
+
+        <div class="form-group">
+
+            <label>Current Password</label>
+
+            <input
+                type="password"
+                id="oldPassword"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>New Password</label>
+
+            <input
+                type="password"
+                id="newPassword"
+            >
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="btn btn-light"
+                onclick="closeModal()">
+                Cancel
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="savePassword()">
+                Update Password
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+function savePassword() {
+
+    const oldPassword =
+        document.getElementById("oldPassword").value;
+
+    const newPassword =
+        document.getElementById("newPassword").value;
+
+    if (
+        oldPassword !== "admin123"
+    ) {
+
+        toast(
+            "Current password is incorrect.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if (
+        newPassword.length < 6
+    ) {
+
+        toast(
+            "Password must be at least 6 characters.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    toast(
+        "Password changed for this demo session.",
+        "success"
+    );
+
+    closeModal();
+
+}
+
+
+/* =========================
+   STORAGE
+========================= */
+
+function updateStorage() {
+
+    const used =
+        files
+        .filter(f => !f.deleted)
+        .reduce(
+            (sum,f) => sum + (f.size || 0),
+            0
+        );
+
+    const percentage =
+        Math.min(
+            (used / STORAGE_LIMIT) * 100,
+            100
+        );
+
+    const progress =
+        document.getElementById(
+            "storageProgress"
+        );
+
+    if (progress)
+        progress.style.width =
+            percentage + "%";
+
+    const text =
+        document.getElementById(
+            "storageText"
+        );
+
+    if (text)
+        text.textContent =
+            `${formatBytes(used)} of 5 GB used`;
+
+    const settingsProgress =
+        document.getElementById(
+            "settingsProgress"
+        );
+
+    if (settingsProgress)
+        settingsProgress.style.width =
+            percentage + "%";
+
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+function openModal(content) {
+
+    document
+    .getElementById("modal")
+    .innerHTML = content;
+
+    document
+    .getElementById("modalOverlay")
+    .style.display = "flex";
+
+}
+
+
+function closeModal() {
+
+    document
+    .getElementById("modalOverlay")
+    .style.display = "none";
+
+}
+
+
+document
+.getElementById("modalOverlay")
+.addEventListener(
+    "click",
+    function(e) {
+
+        if (
+            e.target === this
+        ) closeModal();
+
+    }
+);
+
+
+/* =========================
+   SEARCH
+========================= */
+
+document
+.getElementById("searchInput")
+.addEventListener(
+    "input",
+    function() {
+
+        if (
+            currentPage === "files"
+        ) {
+
+            renderPage();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   THEME
+========================= */
+
+function applyTheme() {
+
+    document.body.classList.toggle(
+        "dark",
+        theme === "dark"
+    );
+
+}
+
+
+function toggleTheme() {
+
+    theme =
+        theme === "dark"
+        ? "light"
+        : "dark";
+
+    localStorage.setItem(
+        "cloudvault_theme",
+        theme
+    );
+
+    applyTheme();
+
+    if (currentPage === "settings")
+        renderPage();
+
+}
+
+
+document
+.getElementById("themeBtn")
+.addEventListener(
+    "click",
+    toggleTheme
+);
+
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+document
+.getElementById("menuBtn")
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+
+    }
+);
+
+
+/* =========================
+   NAV HELPERS
+========================= */
+
+function navigateTo(page) {
+
+    currentPage = page;
+
+    currentFolder = null;
+
+    activateNav(page);
+
+    renderPage();
+
+}
+
+
+function activateNav(page) {
+
+    document
+    .querySelectorAll(".nav-item")
+    .forEach(n =>
+        n.classList.remove("active")
+    );
+
+    const item =
+        document.querySelector(
+            `.nav-item[data-page="${page}"]`
+        );
+
+    if (item)
+        item.classList.add("active");
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================
+   INITIAL SAMPLE DATA
+========================= */
+
+if (
+    !localStorage.getItem(
+        "cloudvault_initialized"
+    )
+) {
+
+    folders = [];
+
+    files = [];
+
+    shares = [];
+
+    localStorage.setItem(
+        "cloudvault_initialized",
+        "true"
+    );
+
+    saveData();
+
+}
+
+</script>
+
+</body>
+</html>
