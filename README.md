@@ -35,7 +35,7 @@ Because this is a client-side only application, there are no build tools, depend
 
 1. **Clone the repository:**
    \`\`\`bash
-   git clone https://github.com/yourusername/cloudvault.git
+   (https://github.com/kmulani050704-bot/Sahil_naitik)
    \`\`\`
 2. **Open the app:**
    Simply double-click the `index.html` file to open it in any modern web browser, or serve it using a local development server like VS Code's Live Server.
