@@ -22,12 +22,14 @@ Data persistence is simulated using the browser's `localStorage` API.
 
 The project has been modularized for maintainability:
 
-\`\`\`text
+```text
 ├── index.html    # Core markup and application layout
 ├── styles.css    # Base styling, UI components, and CSS animations
 ├── media.css     # Responsive breakpoints and mobile layout adjustments
 └── script.js     # State management, routing, and business logic
-\`\`\`
+```
+
+
 
 ## 🛠️ Getting Started
 
